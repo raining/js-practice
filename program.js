@@ -64,45 +64,27 @@ function zip(file) {
     var newFile = file.match(pattern).join("");
 
 
-    var p1 = /[\/\*]/;
-    var p2 = /\*\//;
+    var p1 = /[\/\*]/g;
+    var p2 = /\*\//g;
 
-//    console.log(newFile.search(p1));
-//    console.log(newFile.search(p2));
+    var i = newFile.search(p1);
+    var j = newFile.search(p2);
 
-//    for (var i = 0; i < newFile.length; i++) {
-//        var startComment = newFile.substr(newFile.search(p1),2); // /*
-//        var endComment = newFile.substr(newFile.search(p2),2); // */
+    while (i != -1 && j != -1) {
+        var str = newFile.split('');
+        var strTmp = str.splice(i, j - i + 2).join('');
+        newFile = str.join('');
+        i = newFile.search(p1);
+        j = newFile.search(p2);
+    }
 
-        var i = newFile.search(p1);
-        var j = newFile.search(p2);
-
-        var arraystr = newFile.split("");
-
-        console.log(arraystr.splice(i, j - i + 2), p1.lastIndex, p2.lastIndex);
-
-//        var i = newFile.search(p1);
-//        var j = newFile.search(p2);
-//
-//        console.log(arraystr.splice(i, j - i + 2));
-
-        var newStr = arraystr.join('');
-
-        console.log(newStr);
-
-//    }
-
-    console.log(newFile);
-
-
+    return newFile;
 }
 
 var r = "#color {\ncolor: black; /*!hddf@#ent\ncjd#fdf*//*((comment\n*";
 r += "/background-color: white;\npadding: 10px;\n}\ndiv {\n    resize: vertical;\n}";
 
-zip(r);
-
-
+console.log(zip(r));
 
 
 //files.forEach(function(filename) {
