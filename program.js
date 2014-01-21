@@ -13,31 +13,28 @@ if (process.argv.length >= 2) {
 
 console.log(sourceDir, resultDir);
 
-//todo: define a extension of file - done
-//files.substring(file.lastIndexOf('.') + 1)) 'css', 'html',...
-
 
 var files = [];
 
 //асинхронное чтение файлов и каталогов
 //todo: fix method - not all dirs read yet
 
-//fs.readdir(sourceDir, function(err, data) {
-//    if (err) throw err;
-//    console.log(data);
-//});
+fs.readdir(sourceDir, function(err, data) {
+    if (err) throw err;
+    console.log(data);
+    files.push(data);
+});
 
+
+
+//read file, convert file content to string, is it a CSS file and compress it todo:done!
 var bytes;
 var file = 'test/style.css';
-
-
-//read file, convert file content to string, is it a CSS file and compress it
 
 fs.readFile(file, 'utf8', function(err, data) {
     if (err) throw err;
     bytes = new Buffer(data);
     var fileToStr = bytes.toString('utf8');
-    console.log('**Bytes**\n',fileToStr);
     console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
 });
 
@@ -55,7 +52,7 @@ function filterFileCopy(source, destination, done) {
     })
 }
 
-// поиск css файла по расширению
+// check is it css file or not by extension, file - String
 function isCSS(file) {
     return (file.substring(file.lastIndexOf('.') + 1) === 'css');
 }
@@ -88,17 +85,15 @@ function zip(file) {
 var r = "#color {\ncolor: black; /*!hddf@#ent\ncjd#fdf*//*((comment\n*";
 r += "/background-color: white;\npadding: 10px;\n}\ndiv {\n    resize: vertical;\n}";
 
-console.log(zip(r));
 
+files.forEach(function(filename) {
+    var fullname = path.join(sourceDir, filename);
 
-//files.forEach(function(filename) {
-//    var fullname = path.join(sourceDir, filename);
-//
-//    var stats = fs.statSync(fullname);
-//
-//    if (stats.isDirectory()) filename += "/";
-//    console.log(fullname);
-//});
+    var stats = fs.statSync(fullname);
+
+    if (stats.isDirectory()) filename += "/";
+    console.log(fullname);
+});
 
 //console.log(bytes.toString());
 
