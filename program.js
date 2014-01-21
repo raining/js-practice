@@ -19,29 +19,25 @@ var files = [];
 //асинхронное чтение файлов и каталогов
 //todo: fix method - not all dirs read yet
 
-fs.readdir(sourceDir, function(err, data) {
-    if (err) throw err;
-    console.log(data);
-    files.push(data);
-});
-
-
 
 
 
 //копирование файлов
 
-function filterFileCopy(source, destination, done) {
-    var input = fs.createReadStream(source);
-    var output = fs.createWriteStream(destination);
+//function filterFileCopy(source, destination, done) {
+//    var input = fs.createReadStream(source);
+//    var output = fs.createWriteStream(destination);
+//
+//    input.on("data", function(d) { output.write(data); });
+//    input.on("error", function(err) { throw err; });
+//    input.on("end", function() {
+//        output.end();
+//        if (done) done();
+//    })
+//}
 
-    input.on("data", function(d) { output.write(data); });
-    input.on("error", function(err) { throw err; });
-    input.on("end", function() {
-        output.end();
-        if (done) done();
-    })
-}
+var input = fs.createReadStream('test/style.css');
+var output = fs.createWriteStream('test/style1.css');
 
 //read file, convert file content to string, is it a CSS file and compress it todo:done!
 var bytes;
@@ -51,7 +47,11 @@ fs.readFile(file, 'utf8', function(err, data) {
     if (err) throw err;
     bytes = new Buffer(data);
     var fileToStr = bytes.toString('utf8');
-    console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
+//    console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
+    fs.writeFile(file, zip(fileToStr), function(err) {
+        if (err) throw err;
+        console.log('file is wrote\n');
+    });
 });
 
 // check is it css file or not by extension, file - String todo:done!
@@ -86,16 +86,4 @@ function zip(file) {
 
 var r = "#color {\ncolor: black; /*!hddf@#ent\ncjd#fdf*//*((comment\n*";
 r += "/background-color: white;\npadding: 10px;\n}\ndiv {\n    resize: vertical;\n}";
-
-
-files.forEach(function(filename) {
-    var fullname = path.join(sourceDir, filename);
-
-    var stats = fs.statSync(fullname);
-
-    if (stats.isDirectory()) filename += "/";
-    console.log(fullname);
-});
-
-//console.log(bytes.toString());
 
