@@ -14,45 +14,76 @@ if (process.argv.length >= 2) {
 console.log(sourceDir, resultDir);
 
 
-var files = [];
+//асинхронное чтение файлов и каталогов todo:not yet done!!!!
 
-//асинхронное чтение файлов и каталогов
-//todo: fix method - not all dirs read yet
+var readdirs = function(sourceDir, done) {
+    var files = [];
 
+    fs.readdir(sourceDir, function(err, data) {
+        if (err) throw done(err);
+        var size = data.length;
+        if (!size) return done(null, files);
 
+        for (var i in data) {
+            var file = sourceDir + "/" + data[i];
+            fs.stat(file, function(err, stat) {
+                if (stat && stat.isDirectory()) {
+                    readdirs(file, function(err, res) {
+                       files = files.concat(res);
+                        if (!--size) done(null, files);
+                    });
+                } else {
+                    files.push(file);
+                    if (!--size) done(null, files);
+                }
+            });
+        }
+    });
+}
+
+readdirs(sourceDir, function(err, res) {
+    if (err) throw err;
+    console.log(res);
+});
 
 
 //копирование файлов
 
-//function filterFileCopy(source, destination, done) {
-//    var input = fs.createReadStream(source);
-//    var output = fs.createWriteStream(destination);
-//
-//    input.on("data", function(d) { output.write(data); });
-//    input.on("error", function(err) { throw err; });
-//    input.on("end", function() {
-//        output.end();
-//        if (done) done();
-//    })
-//}
+function filterFileCopy(source, destination, filter) {
+    var input = fs.createReadStream(source);
+    var output = fs.createWriteStream(destination);
 
-var input = fs.createReadStream('test/style.css');
-var output = fs.createWriteStream('test/style1.css');
+    input.on("data", function(d) {
+        if (filter) {
+            output.write(data);
+        } });
+    input.on("error", function(err) { throw err; });
+    input.on("end", function() { console.log('fileCopy have finished'); });
+}
+
+//filterFileCopy(sDir, dDir, isCSS(file));
 
 //read file, convert file content to string, is it a CSS file and compress it todo:done!
 var bytes;
 var file = 'test/style.css';
 
-fs.readFile(file, 'utf8', function(err, data) {
-    if (err) throw err;
-    bytes = new Buffer(data);
-    var fileToStr = bytes.toString('utf8');
-//    console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
-    fs.writeFile(file, zip(fileToStr), function(err) {
+function compressFile(file) {
+
+    fs.readFile(file, 'utf8', function(err, data) {
         if (err) throw err;
-        console.log('file is wrote\n');
+        bytes = new Buffer(data);
+        var fileToStr = bytes.toString('utf8');
+//        console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
+        fs.writeFile(file, zip(fileToStr), function(err) {
+            if (err) throw err;
+            console.log('file have written\n');
+        });
     });
-});
+
+    return file;
+}
+
+compressFile(file);
 
 // check is it css file or not by extension, file - String todo:done!
 function isCSS(file) {
@@ -83,7 +114,4 @@ function zip(file) {
 
     return newFile;
 }
-
-var r = "#color {\ncolor: black; /*!hddf@#ent\ncjd#fdf*//*((comment\n*";
-r += "/background-color: white;\npadding: 10px;\n}\ndiv {\n    resize: vertical;\n}";
 
