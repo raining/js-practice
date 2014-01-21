@@ -22,19 +22,23 @@ var files = [];
 //асинхронное чтение файлов и каталогов
 //todo: fix method - not all dirs read yet
 
-fs.readdir(sourceDir, function(err, files) {
+//fs.readdir(sourceDir, function(err, data) {
+//    if (err) throw err;
+//    console.log(data);
+//});
+
+var bytes;
+var file = 'test/style.css';
+
+
+//read file, convert file content to string, is it a CSS file and compress it
+
+fs.readFile(file, 'utf8', function(err, data) {
     if (err) throw err;
-
-    for (var i in files) {
-
-        if (fs.statSync(files[i]).isDirectory()) {
-            fs.readdir(files[i], function(err, filess) {
-                if (err) throw err;
-//                console.log(files.concat(filess));
-            });
-        }
-        files.push(files[i]);
-    }
+    bytes = new Buffer(data);
+    var fileToStr = bytes.toString('utf8');
+    console.log('**Bytes**\n',fileToStr);
+    console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
 });
 
 //копирование файлов
