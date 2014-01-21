@@ -27,16 +27,7 @@ fs.readdir(sourceDir, function(err, data) {
 
 
 
-//read file, convert file content to string, is it a CSS file and compress it todo:done!
-var bytes;
-var file = 'test/style.css';
 
-fs.readFile(file, 'utf8', function(err, data) {
-    if (err) throw err;
-    bytes = new Buffer(data);
-    var fileToStr = bytes.toString('utf8');
-    console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
-});
 
 //копирование файлов
 
@@ -52,12 +43,23 @@ function filterFileCopy(source, destination, done) {
     })
 }
 
-// check is it css file or not by extension, file - String
+//read file, convert file content to string, is it a CSS file and compress it todo:done!
+var bytes;
+var file = 'test/style.css';
+
+fs.readFile(file, 'utf8', function(err, data) {
+    if (err) throw err;
+    bytes = new Buffer(data);
+    var fileToStr = bytes.toString('utf8');
+    console.log('isCSS\n', isCSS(file), 'ZIP\n', zip(fileToStr));
+});
+
+// check is it css file or not by extension, file - String todo:done!
 function isCSS(file) {
     return (file.substring(file.lastIndexOf('.') + 1) === 'css');
 }
 
-//способ сжатия файлов
+//способ сжатия файлов todo: done!
 function zip(file) {
     //удалить пробелы, комментарии,переводы строк
 
